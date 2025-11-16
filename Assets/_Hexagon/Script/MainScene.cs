@@ -32,6 +32,7 @@ public class MainScene : MonoBehaviour {
 		}
 		Coins.text = CoinManager.Coins.ToString ();
 	}
+
 	public void Play()
 	{
 		if (CoinManager.Coins >= 100) {
@@ -96,7 +97,7 @@ public class MainScene : MonoBehaviour {
 	public void Leaderboards()
 	{
 		if (Application.internetReachability != NetworkReachability.NotReachable) {
-			GameObject.FindObjectOfType<Leadersboard> ().ShowLeadersboard ();
+			FindAnyObjectByType<Leadersboard> ().ShowLeadersboard ();
 		} else {
 			InformationDlg.SetActive (true);
 			InformationDlg.transform.Find ("Message").GetComponent <Text> ().text = "No internet connection";

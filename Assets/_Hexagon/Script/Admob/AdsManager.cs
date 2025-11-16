@@ -26,8 +26,6 @@ public class AdsManager : MonoBehaviour, IUnityAdsInitializationListener, IUnity
     private string interstitialAdUnitId_Unity = "Android_Interstitial";
     private string rewardAdUnitId_Unity = "Android_Rewarded";
 
-    private int clickCount = 0;
-
     private string appID = "ca-app-pub-6163322720080156~4164723527";
     private string bannerUnitId = "ca-app-pub-6163322720080156/5764745651";
     private string interstitialAdUnitId = "ca-app-pub-6163322720080156/5619128197";
@@ -35,7 +33,8 @@ public class AdsManager : MonoBehaviour, IUnityAdsInitializationListener, IUnity
     private string openAdUnitId = "ca-app-pub-6163322720080156/3610733136";
 
     private bool giveReward = false;
-    int rewardAmount = 1000;
+    private int rewardAmount = 1000;
+    public bool testAd = false;
 
     void Awake()
     {
@@ -53,6 +52,14 @@ public class AdsManager : MonoBehaviour, IUnityAdsInitializationListener, IUnity
     // Start is called before the first frame update
     public void Start()
     {
+        if (testAd)
+        {
+            bannerUnitId = "ca-app-pub-3940256099942544/6300978111";
+            openAdUnitId = "ca-app-pub-3940256099942544/9257395921";
+            interstitialAdUnitId = "ca-app-pub-3940256099942544/1033173712";
+            rewardAdUnitId = "ca-app-pub-3940256099942544/5224354917";
+        }
+
         Advertisement.Initialize(gameId, false, this);
 
         // Listen to application foreground and background events.
@@ -67,6 +74,31 @@ public class AdsManager : MonoBehaviour, IUnityAdsInitializationListener, IUnity
             RequestRewarded();
             LoadAppOpenAd();
         });
+    }
+
+    private void Update()
+    {
+        if (giveReward)
+        {
+            giveReward = false;
+            if (SceneManager.GetActiveScene().name == "Game")
+            {
+                FindAnyObjectByType<GameScene>().ContinueGame();
+            }
+            else
+            {
+                CoinManager._Instance.addCoins(100);
+                MainScene mainScene = FindAnyObjectByType<MainScene>();
+                if (mainScene != null)
+                {
+                    mainScene.SaveVideoDay();
+                    mainScene.Coins.text = CoinManager.Coins.ToString();
+                    mainScene.InformationDlg.SetActive(true);
+                    mainScene.InformationDlg.transform.Find("Message").GetComponent<Text>().text = "Congrats! You got 100 coins FREE";
+                }
+            }
+        }
+
     }
 
     private void RequestBanner()
@@ -140,8 +172,8 @@ public class AdsManager : MonoBehaviour, IUnityAdsInitializationListener, IUnity
         // Initialize an InterstitialAd.
         InterstitialAd.Load(interstitialAdUnitId, interstitial_request, (InterstitialAd ad, LoadAdError error) =>
         {
-                // if error is not null, the load request failed.
-                if (error != null || ad == null)
+            // if error is not null, the load request failed.
+            if (error != null || ad == null)
             {
                 Debug.LogError("interstitial ad failed to load an ad " +
                                "with error : " + error);
@@ -170,8 +202,8 @@ public class AdsManager : MonoBehaviour, IUnityAdsInitializationListener, IUnity
         RewardedAd.Load(rewardAdUnitId, rewarded_request,
             (RewardedAd ad, LoadAdError error) =>
             {
-                    // if error is not null, the load request failed.
-                    if (error != null || ad == null)
+                // if error is not null, the load request failed.
+                if (error != null || ad == null)
                 {
                     Debug.LogError("Rewarded ad failed to load an ad " +
                                    "with error : " + error);
@@ -201,28 +233,28 @@ public class AdsManager : MonoBehaviour, IUnityAdsInitializationListener, IUnity
 
         // send the request to load the ad.
         AppOpenAd.Load(openAdUnitId, adRequest,
-          (AppOpenAd ad, LoadAdError error) =>
-          {
-              // if error is not null, the load request failed.
-              if (error != null || ad == null)
-              {
-                  Debug.LogError("app open ad failed to load an ad " +
-                                 "with error : " + error);
-                  return;
-              }
+            (AppOpenAd ad, LoadAdError error) =>
+            {
+                // if error is not null, the load request failed.
+                if (error != null || ad == null)
+                {
+                    Debug.LogError("app open ad failed to load an ad " +
+                                   "with error : " + error);
+                    return;
+                }
 
-              Debug.Log("App open ad loaded with response : "
-                        + ad.GetResponseInfo());
+                Debug.Log("App open ad loaded with response : "
+                          + ad.GetResponseInfo());
 
-              appOpenAd = ad;
-              RegisterEventHandlers(ad);
+                appOpenAd = ad;
+                RegisterEventHandlers(ad);
 
-              if (showAppOpen)
-              {
-                  showAppOpen = false;
-                  ShowAppOpenAd();
-              }
-          });
+                if (showAppOpen)
+                {
+                    showAppOpen = false;
+                    ShowAppOpenAd();
+                }
+            });
     }
 
     private void RegisterEventHandlers(AppOpenAd ad)
@@ -254,8 +286,8 @@ public class AdsManager : MonoBehaviour, IUnityAdsInitializationListener, IUnity
         {
             Debug.Log("App open ad full screen content closed.");
 
-                // Reload the ad so that we can show another as soon as possible.
-                LoadAppOpenAd();
+            // Reload the ad so that we can show another as soon as possible.
+            LoadAppOpenAd();
         };
         // Raised when the ad failed to open full screen content.
         ad.OnAdFullScreenContentFailed += (AdError error) =>
@@ -284,12 +316,6 @@ public class AdsManager : MonoBehaviour, IUnityAdsInitializationListener, IUnity
         {
             Debug.LogError("App open ad is not ready yet.");
         }
-    }
-
-    // Returns an ad request with custom ad targeting.
-    private AdRequest CreateAdRequest()
-    {
-        return new AdRequest();
     }
 
     private void OnAppStateChanged(AppState state)
@@ -379,31 +405,6 @@ public class AdsManager : MonoBehaviour, IUnityAdsInitializationListener, IUnity
         Debug.Log("OnInitializationFailed : " + message);
     }
 
-    private void Update()
-    {
-        if (giveReward)
-        {
-            giveReward = false;
-            if (SceneManager.GetActiveScene().name == "Game")
-            {
-                FindObjectOfType<GameScene>().ContinueGame();
-            }
-            else
-            {
-                CoinManager._Instance.addCoins(100);
-                MainScene mainScene = GameObject.FindObjectOfType<MainScene>();
-                if (mainScene != null)
-                {
-                    mainScene.SaveVideoDay();
-                    mainScene.Coins.text = CoinManager.Coins.ToString();
-                    mainScene.InformationDlg.SetActive(true);
-                    mainScene.InformationDlg.transform.Find("Message").GetComponent<Text>().text = "Congrats! You got 100 coins FREE";
-                }
-            }
-        }
-    }
-
-
     public bool ShowRewardVideo()
     {
         const string rewardMsg = "Rewarded ad rewarded the user. Type: {0}, amount: {1}.";
@@ -411,8 +412,8 @@ public class AdsManager : MonoBehaviour, IUnityAdsInitializationListener, IUnity
         {
             rewardedAd.Show((Reward reward) =>
             {
-                    // TODO: Reward the user.
-                    Debug.Log(String.Format(rewardMsg, reward.Type, reward.Amount));
+                // TODO: Reward the user.
+                Debug.Log(String.Format(rewardMsg, reward.Type, reward.Amount));
                 giveReward = true;
             });
             return true;
@@ -437,11 +438,13 @@ public class AdsManager : MonoBehaviour, IUnityAdsInitializationListener, IUnity
 
     public void HideBanner()
     {
-        this.bannerView.Hide();
+        if (this.bannerView != null)
+            this.bannerView.Hide();
     }
 
     public void ShowBanner()
     {
-        this.bannerView.Show();
+        if (this.bannerView != null)
+            this.bannerView.Show();
     }
 }

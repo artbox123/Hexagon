@@ -81,7 +81,7 @@ public class GameScene : MonoBehaviour {
 
 	public void ContinueGame()
 	{
-		FindObjectOfType<Spawner>().ContinueGame();
+		FindAnyObjectByType<Spawner>().ContinueGame();
 		GameOverDlg.SetActive(false);
 		Time.timeScale = 1;
 		StartGame.GetComponent<Spawner>().enabled = true;

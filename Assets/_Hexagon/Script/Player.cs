@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Player : MonoBehaviour {
 	
@@ -8,7 +6,7 @@ public class Player : MonoBehaviour {
 		
 	void Start()
 	{
-		gameScene = GameObject.FindObjectOfType<GameScene> ();
+		gameScene = FindAnyObjectByType<GameScene> ();
 	}
 
 	private void OnTriggerEnter2D(Collider2D collider)

@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
@@ -14,18 +12,18 @@ public class DialogManager : MonoBehaviour {
 
 	void Awake()
 	{
-		gameScene = GameObject.FindObjectOfType<GameScene> ();
+		gameScene = FindAnyObjectByType<GameScene> ();
 	}
 	void OnEnable()
 	{
 		if (name == "GameOverDialog") {
-			Counter timer = GameObject.FindObjectOfType<Counter> ();
+			Counter timer = FindAnyObjectByType<Counter> ();
 			timer.StopCounter ();
 
 			Sec.text = timer.secondsText.text + " : " + timer.miliSecondsText.text;
 			Coins.text = CoinManager.Coins.ToString ();
 
-			Leadersboard board = GameObject.FindObjectOfType<Leadersboard> ();
+			Leadersboard board = FindAnyObjectByType<Leadersboard> ();
 			if (board != null) {
 				board.ReportTime (int.Parse (timer.secondsText.text));
 			}
@@ -50,6 +48,7 @@ public class DialogManager : MonoBehaviour {
 	{
 		SceneManager.LoadScene ("Game");
 	}
+
 	public void Continue()
 	{
 		Time.timeScale = 1;
@@ -63,7 +62,7 @@ public class DialogManager : MonoBehaviour {
 	{
 		if (CoinManager.Coins >= 100) {			
 			CoinManager._Instance.minusCoins (100);
-			FindObjectOfType<GameScene>().ContinueGame();
+			FindAnyObjectByType<GameScene>().ContinueGame();
 		}
 	}
 }
