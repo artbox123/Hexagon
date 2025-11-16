@@ -14,10 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   adMobAndroidAppId: ca-app-pub-6163322720080156~4164723527
   adMobIOSAppId: 
-  delayAppMeasurementInit: 1
   enableKotlinXCoroutinesPackagingOption: 1
-  optimizeInitialization: 1
-  optimizeAdLoading: 1
-  userTrackingUsageDescription: Your data will be used to provide you a better and
-    personalized ad experience.
-  validateGradleDependencies: 0
+  enableGradleBuildPreProcessor: 1
+  disableOptimizeInitialization: 0
+  disableOptimizeAdLoading: 0
+  userTrackingUsageDescription: 
+  userLanguage: en
